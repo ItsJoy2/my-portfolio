@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Joy Dey, Full Stack Developer specializing in PHP, Laravel, and modern web applications." />
+  <title>Joy Dey | Full Stack Developer</title>
+
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS (CDN) + custom theme tokens -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: {
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            accent: '#a855f7',
+            ink: '#070b16',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* =====================================================
+       CUSTOM STYLES (plain CSS, works with Tailwind CDN)
+       ===================================================== */
+
+    :root {
+      --glow: rgba(99, 102, 241, 0.4);
+      --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+    section[id] { scroll-margin-top: 5rem; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #070b16; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #6366f1, #a855f7);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+    html { scrollbar-width: thin; scrollbar-color: #6366f1 #070b16; }
+
+    /* Background: soft animated glow blobs */
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .bg-glow span {
+      position: absolute;
+      width: 32rem;
+      height: 32rem;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.22;
+      animation: float-blob 18s ease-in-out infinite;
+    }
+    .bg-glow span:nth-child(1) { background: #6366f1; top: -10rem; left: -10rem; }
+    .bg-glow span:nth-child(2) { background: #a855f7; bottom: -12rem; right: -10rem; animation-delay: -9s; }
+    @keyframes float-blob {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(60px, -40px) scale(1.1); }
+    }
+
+    /* Glassmorphism surfaces */
+    .glass {
+      background: rgba(15, 23, 42, 0.55);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Header scrolled state */
+    .site-header { transition: background-color .4s ease, box-shadow .4s ease; }
+    .site-header.is-scrolled {
+      background-color: rgba(7, 11, 22, 0.75);
+      box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Nav underline */
+    .nav-link { position: relative; }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: -6px;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+      scale: 0 1;
+      transform-origin: left center;
+      transition: scale .4s var(--ease-premium);
+    }
+    .nav-link:hover::after,
+    .nav-link.is-active::after { scale: 1 1; }
+    .nav-link:hover, .nav-link.is-active { color: #a5b4fc; }
+
+    /* Scroll reveal (uses transform; hover uses translate/scale so they don't conflict) */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .8s var(--ease-premium), transform .8s var(--ease-premium);
+      transition-delay: var(--delay, 0ms);
+    }
+    .reveal.is-visible { opacity: 1; transform: none; }
+
+    /* Gradient text */
+    .text-gradient {
+      background: linear-gradient(90deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Buttons: hover scale + glow */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      padding: .75rem 1.5rem;
+      border-radius: .75rem;
+      font-weight: 600;
+      transition: scale .35s var(--ease-premium), box-shadow .35s ease, background-color .3s ease, border-color .3s ease, color .3s ease;
+    }
+    .btn:hover { scale: 1.05; }
+    .btn:active { scale: .97; }
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #7c3aed);
+      color: #fff;
+      box-shadow: 0 10px 25px -10px var(--glow);
+    }
+    .btn-primary:hover { box-shadow: 0 16px 36px -10px var(--glow), 0 0 0 4px rgba(99, 102, 241, .15); }
+    .btn-ghost {
+      color: #e2e8f0;
+      border: 1px solid rgba(148, 163, 184, .3);
+      background: rgba(255, 255, 255, .03);
+    }
+    .btn-ghost:hover { border-color: #818cf8; color: #c7d2fe; box-shadow: 0 8px 24px -10px var(--glow); }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* Project cards: lift, glow, image zoom, cursor spotlight */
+    .project-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 1.25rem;
+      background: rgba(15, 23, 42, .6);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, .08);
+      transition: translate .5s var(--ease-premium), scale .5s var(--ease-premium), box-shadow .5s ease, border-color .4s ease;
+    }
+    .project-card:hover {
+      translate: 0 -8px;
+      scale: 1.02;
+      border-color: rgba(129, 140, 248, .5);
+      box-shadow: 0 25px 50px -12px var(--glow), 0 0 0 1px rgba(99, 102, 241, .15);
+    }
+    .project-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(129, 140, 248, .18), transparent 45%);
+      transition: opacity .4s ease;
+    }
+    .project-card:hover::before { opacity: 1; }
+    .project-thumb {
+      position: relative;
+      height: 11rem;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1e1b4b, #312e81 50%, #4c1d95);
+    }
+    .project-thumb .thumb-initials {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      color: rgba(255, 255, 255, .85);
+      transition: scale .6s var(--ease-premium);
+    }
+    .project-card:hover .thumb-initials { scale: 1.08; }
+
+    /* Skill and tag chips */
+    .chip {
+      padding: .45rem .9rem;
+      border-radius: .6rem;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #c7d2fe;
+      background: rgba(99, 102, 241, .12);
+      border: 1px solid rgba(99, 102, 241, .25);
+      transition: translate .3s var(--ease-premium), box-shadow .3s ease;
+    }
+    .chip:hover { translate: 0 -3px; box-shadow: 0 8px 20px -8px var(--glow); }
+    .tag {
+      padding: .25rem .6rem;
+      border-radius: .4rem;
+      font-size: .75rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      background: rgba(148, 163, 184, .12);
+    }
+
+    /* Stat cards */
+    .stat-card {
+      padding: 1.5rem;
+      border-radius: 1rem;
+      background: rgba(15, 23, 42, .6);
+      border: 1px solid rgba(255, 255, 255, .08);
+      transition: translate .4s var(--ease-premium), box-shadow .4s ease, border-color .4s ease;
+    }
+    .stat-card:hover {
+      translate: 0 -6px;
+      border-color: rgba(129, 140, 248, .4);
+      box-shadow: 0 20px 40px -15px var(--glow);
+    }
+
+    /* Social icon buttons */
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .75rem 1rem;
+      border-radius: .75rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid rgba(255, 255, 255, .08);
+      font-size: .9rem;
+      font-weight: 500;
+      transition: scale .35s var(--ease-premium), background-color .3s ease, color .3s ease, box-shadow .35s ease, border-color .3s ease;
+    }
+    .social-link:hover {
+      scale: 1.04;
+      color: #fff;
+      background: rgba(99, 102, 241, .18);
+      border-color: rgba(129, 140, 248, .5);
+      box-shadow: 0 10px 25px -10px var(--glow);
+    }
+
+    /* Form inputs */
+    .form-input {
+      width: 100%;
+      padding: .75rem 1rem;
+      border-radius: .75rem;
+      background: rgba(15, 23, 42, .6);
+      border: 1px solid rgba(148, 163, 184, .2);
+      color: #e2e8f0;
+      outline: none;
+      transition: border-color .3s ease, box-shadow .3s ease;
+    }
+    .form-input::placeholder { color: #64748b; }
+    .form-input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, .18);
+    }
+
+    /* Mobile drawer */
+    .mobile-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgba(2, 6, 23, .6);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .35s ease, visibility .35s ease;
+    }
+    .mobile-overlay.is-open { opacity: 1; visibility: visible; }
+
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 45;
+      height: 100vh;
+      height: 100dvh;
+      width: min(80vw, 20rem);
+      padding: 5.5rem 1.5rem 2rem;
+      background: rgba(7, 11, 22, .92);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid rgba(255, 255, 255, .08);
+      box-shadow: -20px 0 60px -20px rgba(0, 0, 0, .8);
+      translate: 100% 0;
+      visibility: hidden;
+      transition: translate .5s var(--ease-premium), visibility .5s ease;
+    }
+    .mobile-drawer.is-open { translate: 0 0; visibility: visible; }
+    .mobile-drawer li {
+      opacity: 0;
+      transform: translateX(24px);
+      transition: opacity .4s ease, transform .4s var(--ease-premium);
+    }
+    .mobile-drawer.is-open li { opacity: 1; transform: none; }
+    .mobile-drawer.is-open li:nth-child(1) { transition-delay: .12s; }
+    .mobile-drawer.is-open li:nth-child(2) { transition-delay: .18s; }
+    .mobile-drawer.is-open li:nth-child(3) { transition-delay: .24s; }
+    .mobile-drawer.is-open li:nth-child(4) { transition-delay: .30s; }
+
+    body.menu-open { overflow: hidden; }
+
+    /* Menu icon swap */
+    .menu-toggle .icon-close { display: none; }
+    .menu-toggle[aria-expanded="true"] .icon-close { display: block; }
+    .menu-toggle[aria-expanded="true"] .icon-menu { display: none; }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body class="bg-ink text-slate-300 font-sans antialiased selection:bg-brand-600 selection:text-white">
+
+  <!-- Animated background glow -->
+  <div class="bg-glow" aria-hidden="true"><span></span><span></span></div>
+
+  <!-- =========================================================
+       HEADER / NAVIGATION
+       ========================================================= -->
+  <header id="site-header" class="site-header fixed top-0 inset-x-0 z-50 border-b border-white/5">
+    <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Main navigation">
+      <a href="#home" class="text-xl font-extrabold tracking-tight text-white">
+        Joy<span class="text-brand-500">.dev</span>
+      </a>
+
+      <div class="flex items-center gap-4">
+        <ul class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+          <li><a href="#home" class="nav-link transition-colors">Home</a></li>
+          <li><a href="#about" class="nav-link transition-colors">About</a></li>
+          <li><a href="#skills" class="nav-link transition-colors">Skills</a></li>
+          <li><a href="#projects" class="nav-link transition-colors">Projects</a></li>
+          <li><a href="#contact" class="nav-link transition-colors">Contact</a></li>
+        </ul>
+
+        <button id="menu-toggle" type="button"
+          class="menu-toggle md:hidden p-2 rounded-lg text-slate-200 hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          aria-controls="mobile-menu" aria-expanded="false" aria-label="Open navigation menu">
+          <i data-lucide="menu" class="icon-menu w-6 h-6"></i>
+          <i data-lucide="x" class="icon-close w-6 h-6"></i>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Mobile drawer + backdrop (outside header so its blur doesn't trap the fixed drawer) -->
+  <div id="mobile-overlay" class="mobile-overlay md:hidden"></div>
+  <nav id="mobile-menu" class="mobile-drawer md:hidden" aria-label="Mobile navigation">
+    <ul class="flex flex-col gap-1 text-lg font-semibold text-slate-200">
+      <li><a href="#home" class="drawer-link block py-3 hover:text-brand-400">Home</a></li>
+      <li><a href="#about" class="drawer-link block py-3 hover:text-brand-400">About</a></li>
+      <li><a href="#skills" class="drawer-link block py-3 hover:text-brand-400">Skills</a></li>
+      <li><a href="#projects" class="drawer-link block py-3 hover:text-brand-400">Projects</a></li>
+      <li><a href="#contact" class="drawer-link block py-3 hover:text-brand-400">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- =========================================================
+         1. HERO
+         ========================================================= -->
+    <section id="home" class="min-h-screen flex items-center pt-28 pb-20 relative">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid lg:grid-cols-2 gap-14 items-center">
+
+        <div class="text-center lg:text-left">
+          <span class="reveal inline-flex items-center gap-2 px-3 py-1 mb-6 text-xs font-semibold tracking-wider uppercase rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/25">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse"></span>
+            Open to opportunities
+          </span>
+
+          <h1 class="reveal text-5xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.05]" style="--delay:100ms">
+            Hi, I'm <span class="text-gradient">Joy Dey</span>
+          </h1>
+
+          <p class="reveal mt-4 text-xl sm:text-2xl font-semibold text-slate-200" style="--delay:200ms">
+            Full Stack Developer
+          </p>
+
+          <p class="reveal mt-6 text-lg text-slate-400 leading-relaxed max-w-xl mx-auto lg:mx-0" style="--delay:300ms">
+            Passionate Full Stack Developer with expertise in building robust web applications,
+            scalable backends, and modern user interfaces. Dedicated to writing clean code and
+            turning complex ideas into seamless digital experiences.
+          </p>
+
+          <div class="reveal mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start" style="--delay:400ms">
+            <a href="#projects" class="btn btn-primary">
+              View Work <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+            <a href="#contact" class="btn btn-ghost">
+              Contact Me <i data-lucide="mail" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Profile avatar with glow ring -->
+        <div class="reveal flex justify-center" style="--delay:250ms">
+          <div class="relative">
+            <div class="absolute -inset-6 rounded-full bg-gradient-to-tr from-brand-500 to-accent opacity-30 blur-3xl"></div>
+            <div class="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full p-[3px] bg-gradient-to-tr from-brand-500 via-accent to-brand-400">
+              <div class="glass w-full h-full rounded-full flex items-center justify-center bg-ink">
+                <span class="text-7xl sm:text-8xl font-extrabold text-gradient select-none">JD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================
+         2. ABOUT
+         ========================================================= -->
+    <section id="about" class="py-24">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <header class="reveal text-center max-w-2xl mx-auto mb-16">
+          <p class="text-sm font-semibold uppercase tracking-widest text-brand-400">About</p>
+          <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold text-white">Who I am</h2>
+        </header>
+
+        <div class="grid lg:grid-cols-2 gap-12 items-start">
+          <div class="reveal space-y-5 text-slate-400 leading-relaxed text-lg">
+            <p>
+              I build end-to-end web applications, from the server logic and database design
+              to the interfaces people actually use. My work centers on dependable backends
+              and front ends that feel fast and intentional.
+            </p>
+            <p>
+              I care about clean, maintainable code and about solving the real problem behind
+              a feature request. Whether it's an e-commerce platform, a digital wallet, or an
+              organizational website, I focus on security, clarity, and a smooth user experience.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-5">
+            <div class="reveal stat-card" style="--delay:0ms">
+              <i data-lucide="layers" class="w-7 h-7 text-brand-400 mb-3"></i>
+              <p class="text-3xl font-extrabold text-white">4</p>
+              <p class="text-sm text-slate-400 mt-1">Live Platforms</p>
+            </div>
+            <div class="reveal stat-card" style="--delay:100ms">
+              <i data-lucide="server" class="w-7 h-7 text-brand-400 mb-3"></i>
+              <p class="text-3xl font-extrabold text-white">Backend</p>
+              <p class="text-sm text-slate-400 mt-1">Scalable APIs &amp; Logic</p>
+            </div>
+            <div class="reveal stat-card" style="--delay:200ms">
+              <i data-lucide="palette" class="w-7 h-7 text-brand-400 mb-3"></i>
+              <p class="text-3xl font-extrabold text-white">Frontend</p>
+              <p class="text-sm text-slate-400 mt-1">Modern, Responsive UI</p>
+            </div>
+            <div class="reveal stat-card" style="--delay:300ms">
+              <i data-lucide="shield-check" class="w-7 h-7 text-brand-400 mb-3"></i>
+              <p class="text-3xl font-extrabold text-white">Secure</p>
+              <p class="text-sm text-slate-400 mt-1">Fintech &amp; Commerce Focus</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         3. SKILLS
+         ========================================================= -->
+    <section id="skills" class="py-24">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <header class="reveal text-center max-w-2xl mx-auto mb-16">
+          <p class="text-sm font-semibold uppercase tracking-widest text-brand-400">Skills</p>
+          <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold text-white">What I work with</h2>
+        </header>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="reveal stat-card" style="--delay:0ms">
+            <i data-lucide="braces" class="w-8 h-8 text-brand-400 mb-4"></i>
+            <h3 class="text-lg font-bold text-white mb-3">PHP</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Server-side logic, secure APIs, and clean object-oriented code.</p>
+          </div>
+          <div class="reveal stat-card" style="--delay:100ms">
+            <i data-lucide="flame" class="w-8 h-8 text-brand-400 mb-4"></i>
+            <h3 class="text-lg font-bold text-white mb-3">Laravel</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Full-featured applications with Eloquent, routing, auth, and queues.</p>
+          </div>
+          <div class="reveal stat-card" style="--delay:200ms">
+            <i data-lucide="code-xml" class="w-8 h-8 text-brand-400 mb-4"></i>
+            <h3 class="text-lg font-bold text-white mb-3">HTML / CSS</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Semantic markup and responsive layouts with modern styling.</p>
+          </div>
+          <div class="reveal stat-card" style="--delay:300ms">
+            <i data-lucide="zap" class="w-8 h-8 text-brand-400 mb-4"></i>
+            <h3 class="text-lg font-bold text-white mb-3">JavaScript</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Interactive interfaces, smooth animations, and dynamic behavior.</p>
+          </div>
+        </div>
+
+        <div class="reveal mt-12 flex flex-wrap justify-center gap-3">
+          <span class="chip">PHP</span>
+          <span class="chip">Laravel</span>
+          <span class="chip">HTML5</span>
+          <span class="chip">CSS3</span>
+          <span class="chip">JavaScript</span>
+          <span class="chip">RESTful APIs</span>
+          <span class="chip">Responsive Design</span>
+          <span class="chip">Problem Solving</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         4. PROJECTS
+         ========================================================= -->
+    <section id="projects" class="py-24">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <header class="reveal text-center max-w-2xl mx-auto mb-16">
+          <p class="text-sm font-semibold uppercase tracking-widest text-brand-400">Projects</p>
+          <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold text-white">Selected work</h2>
+          <p class="mt-4 text-slate-400">Live platforms I've built and shipped.</p>
+        </header>
+
+        <div class="grid md:grid-cols-2 gap-8">
+
+          <!-- Project 1 -->
+          <article class="reveal project-card" style="--delay:0ms">
+            <div class="project-thumb">
+              <div class="thumb-initials">SK</div>
+            </div>
+            <div class="p-7 flex flex-col flex-grow relative z-[2]">
+              <h3 class="text-xl font-bold text-white">Sohojkroy.com</h3>
+              <p class="mt-3 text-slate-400 text-sm leading-relaxed flex-grow">
+                An e-commerce platform built for seamless online shopping and digital transactions,
+                with a streamlined checkout flow and a responsive storefront.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2">
+                <span class="tag">Laravel</span><span class="tag">PHP</span><span class="tag">JavaScript</span><span class="tag">MySQL</span>
+              </div>
+              <div class="mt-7 flex flex-wrap gap-3">
+                <a href="https://github.com/itsjoy2" target="_blank" rel="noopener noreferrer" class="btn btn-ghost !py-2 !px-4 !text-sm">
+                  <i data-lucide="github" class="w-4 h-4"></i> GitHub
+                </a>
+                <a href="https://sohojkroy.com" target="_blank" rel="noopener noreferrer" class="btn btn-primary !py-2 !px-4 !text-sm">
+                  <i data-lucide="external-link" class="w-4 h-4"></i> Live Demo
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 2 -->
+          <article class="reveal project-card" style="--delay:100ms">
+            <div class="project-thumb" style="background: linear-gradient(135deg, #042f2e, #0f766e 50%, #155e75);">
+              <div class="thumb-initials">MW</div>
+            </div>
+            <div class="p-7 flex flex-col flex-grow relative z-[2]">
+              <h3 class="text-xl font-bold text-white">Mindchainwallet.com</h3>
+              <p class="mt-3 text-slate-400 text-sm leading-relaxed flex-grow">
+                A secure digital wallet and blockchain-based financial platform focused on
+                safe transactions and transparent account management.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2">
+                <span class="tag">Laravel</span><span class="tag">PHP</span><span class="tag">JavaScript</span><span class="tag">Blockchain</span>
+              </div>
+              <div class="mt-7 flex flex-wrap gap-3">
+                <a href="https://github.com/itsjoy2" target="_blank" rel="noopener noreferrer" class="btn btn-ghost !py-2 !px-4 !text-sm">
+                  <i data-lucide="github" class="w-4 h-4"></i> GitHub
+                </a>
+                <a href="https://mindchainwallet.com" target="_blank" rel="noopener noreferrer" class="btn btn-primary !py-2 !px-4 !text-sm">
+                  <i data-lucide="external-link" class="w-4 h-4"></i> Live Demo
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 3 -->
+          <article class="reveal project-card" style="--delay:0ms">
+            <div class="project-thumb" style="background: linear-gradient(135deg, #1e1b4b, #6d28d9 50%, #be185d);">
+              <div class="thumb-initials">ME</div>
+            </div>
+            <div class="p-7 flex flex-col flex-grow relative z-[2]">
+              <h3 class="text-xl font-bold text-white">Mindchainecosystem.com</h3>
+              <p class="mt-3 text-slate-400 text-sm leading-relaxed flex-grow">
+                A comprehensive ecosystem platform that brings multiple decentralized services
+                together under one connected, user-friendly experience.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2">
+                <span class="tag">Laravel</span><span class="tag">PHP</span><span class="tag">JavaScript</span><span class="tag">Web3</span>
+              </div>
+              <div class="mt-7 flex flex-wrap gap-3">
+                <a href="https://github.com/itsjoy2" target="_blank" rel="noopener noreferrer" class="btn btn-ghost !py-2 !px-4 !text-sm">
+                  <i data-lucide="github" class="w-4 h-4"></i> GitHub
+                </a>
+                <a href="https://mindchainecosystem.com" target="_blank" rel="noopener noreferrer" class="btn btn-primary !py-2 !px-4 !text-sm">
+                  <i data-lucide="external-link" class="w-4 h-4"></i> Live Demo
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 4 -->
+          <article class="reveal project-card" style="--delay:100ms">
+            <div class="project-thumb" style="background: linear-gradient(135deg, #0c4a6e, #0369a1 50%, #1e40af);">
+              <div class="thumb-initials">KD</div>
+            </div>
+            <div class="p-7 flex flex-col flex-grow relative z-[2]">
+              <h3 class="text-xl font-bold text-white">KDBA.com.bd</h3>
+              <p class="mt-3 text-slate-400 text-sm leading-relaxed flex-grow">
+                An official organizational website designed for institutional management and
+                public engagement, with clear information architecture and accessible content.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-2">
+                <span class="tag">Laravel</span><span class="tag">PHP</span><span class="tag">JavaScript</span><span class="tag">HTML/CSS</span>
+              </div>
+              <div class="mt-7 flex flex-wrap gap-3">
+                <a href="https://github.com/itsjoy2" target="_blank" rel="noopener noreferrer" class="btn btn-ghost !py-2 !px-4 !text-sm">
+                  <i data-lucide="github" class="w-4 h-4"></i> GitHub
+                </a>
+                <a href="https://kdba.com.bd" target="_blank" rel="noopener noreferrer" class="btn btn-primary !py-2 !px-4 !text-sm">
+                  <i data-lucide="external-link" class="w-4 h-4"></i> Live Demo
+                </a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         5. CONTACT
+         ========================================================= -->
+    <section id="contact" class="py-24">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <header class="reveal text-center max-w-2xl mx-auto mb-16">
+          <p class="text-sm font-semibold uppercase tracking-widest text-brand-400">Contact</p>
+          <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold text-white">Let's build something</h2>
+          <p class="mt-4 text-slate-400">Have a project in mind or just want to say hello? Send me a message.</p>
+        </header>
+
+        <div class="grid lg:grid-cols-5 gap-10">
+
+          <!-- Contact form -->
+          <form id="contact-form" class="reveal lg:col-span-3 glass rounded-2xl p-8 space-y-5" novalidate>
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label for="name" class="block text-sm font-medium text-slate-300 mb-1.5">Name</label>
+                <input type="text" id="name" name="name" required placeholder="Your name" class="form-input" />
+              </div>
+              <div>
+                <label for="email" class="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
+                <input type="email" id="email" name="email" required placeholder="you@example.com" class="form-input" />
+              </div>
+            </div>
+            <div>
+              <label for="subject" class="block text-sm font-medium text-slate-300 mb-1.5">Subject</label>
+              <input type="text" id="subject" name="subject" placeholder="Project inquiry" class="form-input" />
+            </div>
+            <div>
+              <label for="message" class="block text-sm font-medium text-slate-300 mb-1.5">Message</label>
+              <textarea id="message" name="message" rows="5" required placeholder="Tell me about your project..." class="form-input resize-none"></textarea>
+            </div>
+
+            <p id="form-status" class="hidden text-sm font-medium" role="status"></p>
+
+            <button type="submit" id="submit-btn" class="btn btn-primary w-full">
+              Send Message <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </form>
+
+          <!-- Social links -->
+          <aside class="reveal lg:col-span-2 space-y-6">
+            <div class="glass rounded-2xl p-7">
+              <h3 class="text-lg font-bold text-white mb-5">Connect with me</h3>
+              <div class="grid gap-3">
+                <a href="https://github.com/itsjoy2" target="_blank" rel="noopener noreferrer" class="social-link">
+                  <i data-lucide="github" class="w-5 h-5"></i> GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/imjoyaj/" target="_blank" rel="noopener noreferrer" class="social-link">
+                  <i data-lucide="linkedin" class="w-5 h-5"></i> LinkedIn
+                </a>
+                <a href="https://www.facebook.com/imjoy.aj" target="_blank" rel="noopener noreferrer" class="social-link">
+                  <i data-lucide="facebook" class="w-5 h-5"></i> Facebook
+                </a>
+                <a href="https://www.instagram.com/imjoy.aj/" target="_blank" rel="noopener noreferrer" class="social-link">
+                  <i data-lucide="instagram" class="w-5 h-5"></i> Instagram
+                </a>
+                <a href="https://t.me/joy_aj" target="_blank" rel="noopener noreferrer" class="social-link">
+                  <i data-lucide="send" class="w-5 h-5"></i> Telegram
+                </a>
+                <a href="https://wa.me/itsjoy.aj" target="_blank" rel="noopener noreferrer" class="social-link">
+                  <i data-lucide="message-circle" class="w-5 h-5"></i> WhatsApp
+                </a>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+  <footer class="border-t border-white/5 bg-ink/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+      <a href="#home" class="text-lg font-extrabold text-white">Joy<span class="text-brand-500">.dev</span></a>
+      <nav aria-label="Footer navigation">
+        <ul class="flex flex-wrap justify-center gap-6 text-sm text-slate-400">
+          <li><a href="#about" class="hover:text-white transition-colors">About</a></li>
+          <li><a href="#skills" class="hover:text-white transition-colors">Skills</a></li>
+          <li><a href="#projects" class="hover:text-white transition-colors">Projects</a></li>
+          <li><a href="#contact" class="hover:text-white transition-colors">Contact</a></li>
+        </ul>
+      </nav>
+      <p class="text-sm text-slate-500">&copy; <span id="year"></span> Joy Dey. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Lucide Icons (CDN) -->
+  <script src="https://unpkg.com/lucide@0.383.0/dist/umd/lucide.min.js"></script>
+
+  <!-- =========================================================
+       VANILLA JAVASCRIPT
+       ========================================================= -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ---------- 1. Icons ---------- */
+      if (window.lucide) lucide.createIcons();
+
+      /* ---------- 2. Scroll reveal (IntersectionObserver) ---------- */
+      const revealEls = document.querySelectorAll('.reveal');
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target); // animate only once
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      revealEls.forEach((el) => revealObserver.observe(el));
+
+      /* ---------- 3. Header state on scroll ---------- */
+      const header = document.getElementById('site-header');
+      const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 16);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      /* ---------- 4. Active nav link highlight ---------- */
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sections = document.querySelectorAll('main section[id]');
+      const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const id = '#' + entry.target.id;
+          navLinks.forEach((link) => {
+            link.classList.toggle('is-active', link.getAttribute('href') === id);
+          });
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      sections.forEach((s) => sectionObserver.observe(s));
+
+      /* ---------- 5. Mobile drawer ---------- */
+      const menuToggle = document.getElementById('menu-toggle');
+      const drawer = document.getElementById('mobile-menu');
+      const overlay = document.getElementById('mobile-overlay');
+      const isOpen = () => drawer.classList.contains('is-open');
+
+      function setMenu(open) {
+        drawer.classList.toggle('is-open', open);
+        overlay.classList.toggle('is-open', open);
+        menuToggle.setAttribute('aria-expanded', String(open));
+        menuToggle.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+        document.body.classList.toggle('menu-open', open);
+      }
+
+      menuToggle.addEventListener('click', () => setMenu(!isOpen()));
+      overlay.addEventListener('click', () => setMenu(false));
+      document.querySelectorAll('.drawer-link').forEach((link) => {
+        link.addEventListener('click', () => setMenu(false));
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isOpen()) {
+          setMenu(false);
+          menuToggle.focus();
+        }
+      });
+      window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
+        if (e.matches) setMenu(false);
+      });
+
+      /* ---------- 6. Cursor spotlight on project cards ---------- */
+      document.querySelectorAll('.project-card').forEach((card) => {
+        card.addEventListener('pointermove', (e) => {
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+          card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+        });
+      });
+
+      /* ---------- 7. Contact form ----------
+         DEMO: simulates sending. To receive real messages, replace the
+         timeout with a fetch to a service such as Formspree:
+         fetch('https://formspree.io/f/YOUR_ID', {
+           method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' }
+         })
+      */
+      const form = document.getElementById('contact-form');
+      const statusEl = document.getElementById('form-status');
+      const submitBtn = document.getElementById('submit-btn');
+      const btnHTML = submitBtn.innerHTML;
+
+      function showStatus(msg, ok) {
+        statusEl.textContent = msg;
+        statusEl.className = 'text-sm font-medium ' + (ok ? 'text-emerald-400' : 'text-red-400');
+        setTimeout(() => statusEl.classList.add('hidden'), 5000);
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1200)); // demo delay
+          showStatus('Thanks! Your message has been sent. I will get back to you soon.', true);
+          form.reset();
+        } catch (err) {
+          showStatus('Something went wrong. Please try again.', false);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = btnHTML;
+          if (window.lucide) lucide.createIcons();
+        }
+      });
+
+      /* ---------- 8. Footer year ---------- */
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>
