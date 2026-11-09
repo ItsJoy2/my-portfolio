@@ -129,6 +129,77 @@
       color: transparent;
     }
 
+    /* Hero watermark and drifting particle grid */
+    .hero-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      font-size: 16rem;
+      font-weight: 800;
+      line-height: 1;
+      opacity: .12;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .hero-particles {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .28;
+      background-image: radial-gradient(circle, rgba(165, 180, 252, .75) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(192, 132, 252, .55) 1px, transparent 1.5px);
+      background-position: 0 0, 24px 32px;
+      background-size: 48px 48px, 72px 72px;
+      mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent);
+      animation: particle-drift 28s linear infinite;
+    }
+    @keyframes particle-drift {
+      to { background-position: 48px 24px, 96px 88px; }
+    }
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .hero-watermark { font-size: 20rem; }
+    }
+
+    /* Fine-pointer custom cursor */
+    .custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      translate: -50% -50%;
+      transition: opacity .2s ease, scale .2s ease, border-color .2s ease, background-color .2s ease;
+      will-change: transform;
+    }
+    .custom-cursor.is-visible { opacity: 1; }
+    .custom-cursor-dot {
+      width: 6px;
+      height: 6px;
+      background: #e0e7ff;
+      box-shadow: 0 0 12px rgba(129, 140, 248, .9);
+    }
+    .custom-cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(165, 180, 252, .75);
+      box-shadow: 0 0 22px rgba(99, 102, 241, .3), inset 0 0 12px rgba(99, 102, 241, .08);
+    }
+    .custom-cursor-ring.is-hovering {
+      scale: 1.45;
+      border-color: rgba(192, 132, 252, .9);
+      background: rgba(99, 102, 241, .08);
+    }
+    .custom-cursor-dot.is-pressed { scale: .65; }
+    @media (hover: hover) and (pointer: fine) {
+      html.has-custom-cursor, html.has-custom-cursor * { cursor: none !important; }
+    }
+
     /* Buttons: hover scale + glow */
     .btn {
       display: inline-flex;
@@ -339,6 +410,8 @@
         scroll-behavior: auto !important;
       }
       .reveal { opacity: 1; transform: none; }
+      .hero-particles { animation: none; }
+      .custom-cursor { display: none; }
     }
   </style>
 </head>
@@ -347,6 +420,8 @@
 
   <!-- Animated background glow -->
   <div class="bg-glow" aria-hidden="true"><span></span><span></span></div>
+  <div id="custom-cursor-dot" class="custom-cursor custom-cursor-dot" aria-hidden="true"></div>
+  <div id="custom-cursor-ring" class="custom-cursor custom-cursor-ring" aria-hidden="true"></div>
 
   <!-- =========================================================
        HEADER / NAVIGATION
@@ -393,8 +468,10 @@
     <!-- =========================================================
          1. HERO
          ========================================================= -->
-    <section id="home" class="min-h-screen flex items-center pt-28 pb-20 relative">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid lg:grid-cols-2 gap-14 items-center">
+    <section id="home" class="min-h-screen flex items-center pt-28 pb-20 relative overflow-hidden">
+      <div class="hero-particles" aria-hidden="true"></div>
+      <div class="hero-watermark text-gradient lg:hidden" aria-hidden="true">JD</div>
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid lg:grid-cols-2 gap-14 items-center relative z-10">
 
         <div class="text-center lg:text-left">
           <span class="reveal inline-flex items-center gap-2 px-3 py-1 mb-6 text-xs font-semibold tracking-wider uppercase rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/25">
@@ -427,7 +504,7 @@
         </div>
 
         <!-- Profile avatar with glow ring -->
-        <div class="reveal flex justify-center" style="--delay:250ms">
+        <div class="reveal hidden lg:flex justify-center" style="--delay:250ms">
           <div class="relative">
             <div class="absolute -inset-6 rounded-full bg-gradient-to-tr from-brand-500 to-accent opacity-30 blur-3xl"></div>
             <div class="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full p-[3px] bg-gradient-to-tr from-brand-500 via-accent to-brand-400">
@@ -759,6 +836,64 @@
   <script>
     (function () {
       'use strict';
+
+      /* ---------- Custom cursor (fine pointer only) ---------- */
+      const cursorDot = document.getElementById('custom-cursor-dot');
+      const cursorRing = document.getElementById('custom-cursor-ring');
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      if (finePointer.matches && !reducedMotion.matches) {
+        document.documentElement.classList.add('has-custom-cursor');
+        let pointerX = 0;
+        let pointerY = 0;
+        let ringX = 0;
+        let ringY = 0;
+        let cursorFrame = null;
+
+        function moveRing() {
+          ringX += (pointerX - ringX) * .18;
+          ringY += (pointerY - ringY) * .18;
+          cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
+
+          if (Math.abs(pointerX - ringX) > .2 || Math.abs(pointerY - ringY) > .2) {
+            cursorFrame = requestAnimationFrame(moveRing);
+          } else {
+            cursorFrame = null;
+          }
+        }
+
+        window.addEventListener('pointermove', (event) => {
+          if (event.pointerType !== 'mouse') {
+            cursorDot.classList.remove('is-visible');
+            cursorRing.classList.remove('is-visible');
+            return;
+          }
+
+          pointerX = event.clientX;
+          pointerY = event.clientY;
+          cursorDot.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0)`;
+          cursorDot.classList.add('is-visible');
+          cursorRing.classList.add('is-visible');
+          if (cursorFrame === null) {
+            ringX = pointerX;
+            ringY = pointerY;
+            cursorFrame = requestAnimationFrame(moveRing);
+          }
+        }, { passive: true });
+
+        window.addEventListener('pointerout', (event) => {
+          if (!event.relatedTarget) {
+            cursorDot.classList.remove('is-visible', 'is-pressed');
+            cursorRing.classList.remove('is-visible', 'is-hovering');
+          }
+        });
+        window.addEventListener('pointerdown', () => cursorDot.classList.add('is-pressed'));
+        window.addEventListener('pointerup', () => cursorDot.classList.remove('is-pressed'));
+        document.addEventListener('pointerover', (event) => {
+          cursorRing.classList.toggle('is-hovering', Boolean(event.target.closest('a, button')));
+        });
+      }
 
       /* ---------- 1. Icons ---------- */
       if (window.lucide) lucide.createIcons();
